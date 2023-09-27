@@ -1,35 +1,64 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
-
+import { useEffect, useState } from "react";
+import "./App.css";
+import { Trainer } from "./Perceptron/Trainer";
+const XORDataset = {
+  inputs: [
+    [0, 0],
+    [0, 1],
+    [1, 0],
+    [1, 1],
+  ],
+  outputs: [[0], [1], [1], [0]],
+};
+const ORDataset = {
+  inputs: [
+    [0, 0],
+    [0, 1],
+    [1, 0],
+    [1, 1],
+  ],
+  outputs: [[0], [1], [1], [1]],
+};
+const trainer = new Trainer([2, 3, 6, 1], XORDataset);
 function App() {
-  const [count, setCount] = useState(0)
+  const [count, setCount] = useState(0);
 
+  const updateCount = () => {
+    setTimeout(() => {
+      setCount(count + 1);
+      updateCount();
+      trainer.train(100, 1);
+    }, 30);
+  };
+  useEffect(() => {
+    updateCount();
+  }, []);
   return (
     <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+    <table >
+   {trainer.predictions?.map((item) => {
+        return <tr>{item[0].toFixed(4)}</tr>;
+      })}
+
+    </table>
+   
+      <div className="layers">
+        {trainer.perceptron.weights?.map((layer) => {
+          return (
+            <table className="layer">
+              {layer.map((i) => (
+                <tr>
+                  {i.map((j) => {
+                    return <td>{j.toFixed(4)}</td>;
+                  })}
+                </tr>
+              ))}
+            </table>
+          );
+        })}
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
     </>
-  )
+  );
 }
 
-export default App
+export default App;
